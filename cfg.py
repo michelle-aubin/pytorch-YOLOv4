@@ -21,8 +21,8 @@ Cfg = EasyDict()
 Cfg.use_darknet_cfg = False
 Cfg.cfgfile = os.path.join(_BASE_DIR, 'cfg', 'yolov4-custom.cfg')
 
-Cfg.batch = 16
-Cfg.subdivisions = 8
+Cfg.batch = 64
+Cfg.subdivisions = 32
 Cfg.width = 480
 Cfg.height = 480
 Cfg.channels = 3
