@@ -134,9 +134,9 @@ class Yolo_loss(nn.Module):
         self.strides = [8, 16, 32]
         image_size = 480
         self.n_classes = n_classes
-        self.n_anchors = n_anchors
+        self.n_anchors = 10 #n_anchors
 
-        self.anchors = [[12, 16], [19, 36], [40, 28], [36, 75], [76, 55], [72, 146], [142, 110], [192, 243], [459, 401]]
+        self.anchors = [[57, 113], [77, 33], [87, 73], [131, 49], [62, 228], [123, 121], [38, 66], [190, 57], [22, 23], [49, 164]]
         self.anch_masks = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
         self.ignore_thre = 0.5
 
