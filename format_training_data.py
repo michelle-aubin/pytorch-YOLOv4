@@ -29,14 +29,14 @@ for entry in data:
         all_data.append(out_str)
 
 # shuffle and split into training/test 80/20
-# random.shuffle(all_data)
-# split_idx = math.ceil(len(all_data) * 0.2)
-# test_data = all_data[0:split_idx]
-# train_data = all_data[split_idx:]
+random.shuffle(all_data)
+split_idx = math.ceil(len(all_data) * 0.2)
+test_data = all_data[0:split_idx]
+train_data = all_data[split_idx:]
 
 # small train and test sets for testing
-test_data = all_data[0:101]
-train_data = all_data[101:301]
+# test_data = all_data[0:101]
+# train_data = all_data[101:301]
 
 with open('train.txt', 'w') as fout:
     for line in train_data:
