@@ -128,7 +128,7 @@ def bboxes_iou(bboxes_a, bboxes_b, xyxy=True, GIoU=False, DIoU=False, CIoU=False
 
 
 class Yolo_loss(nn.Module):
-    def __init__(self, n_classes=80, n_anchors=3, device=None, batch=2):
+    def __init__(self, n_classes=1, n_anchors=9, device=None, batch=2):
         super(Yolo_loss, self).__init__()
         self.device = device
         self.strides = [8, 16, 32]
@@ -136,7 +136,7 @@ class Yolo_loss(nn.Module):
         self.n_classes = n_classes
         self.n_anchors = n_anchors
 
-        self.anchors = [[12, 16], [19, 36], [40, 28], [36, 75], [76, 55], [72, 146], [142, 110], [192, 243], [459, 401]]
+        self.anchors = [[59, 178], [95, 84], [48, 114], [199, 60], [21, 20], [127, 47], [141, 131], [36, 63], [70, 41]]
         self.anch_masks = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
         self.ignore_thre = 0.5
 
@@ -238,7 +238,6 @@ class Yolo_loss(nn.Module):
             batchsize = output.shape[0]
             fsize = output.shape[2]
             n_ch = 5 + self.n_classes
-
             output = output.view(batchsize, self.n_anchors, n_ch, fsize, fsize)
             output = output.permute(0, 1, 3, 4, 2)  # .contiguous()
 

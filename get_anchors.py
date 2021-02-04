@@ -24,7 +24,7 @@ for entry in data:
 
 sample = random.sample(all_w_h, 1000)
 sample = np.array(sample)
-kmeans = KMeans(n_clusters=10).fit(sample)
+kmeans = KMeans(n_clusters=9).fit(sample)
 rounded = []
 for x in kmeans.cluster_centers_:
     rounded.append([round(x[0]), round(x[1])])
