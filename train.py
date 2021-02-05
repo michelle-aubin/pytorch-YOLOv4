@@ -136,7 +136,7 @@ class Yolo_loss(nn.Module):
         self.n_classes = n_classes
         self.n_anchors = n_anchors
 
-        self.anchors = [[59, 178], [95, 84], [48, 114], [199, 60], [21, 20], [127, 47], [141, 131], [36, 63], [70, 41]]
+        self.anchors = [[24, 22], [32, 68], [69, 39], [50, 129], [122, 53], [77, 86], [63, 194], [189, 66], [131, 137]]
         self.anch_masks = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
         self.ignore_thre = 0.5
 
@@ -327,14 +327,29 @@ def train(model, device, config, epochs=5, batch_size=1, save_cp=True, log_step=
 
     # learning rate setup
     def burnin_schedule(i):
-        if i < config.burn_in:
-            factor = pow(i / config.burn_in, 4)
-        elif i < config.steps[0]:
+        # if i < config.burn_in:
+        #     factor = pow(i / config.burn_in, 4)
+        # elif i < config.steps[0]:
+        #     factor = 1.0
+        # elif i < config.steps[1]:
+        #     factor = 0.1
+        # else:
+        #     factor = 0.01
+        # return factor
+        # i increments after every batch is processed (64 images)
+        # so i += ~52 after every epoch of 3727 images
+        # HARDCODED to drop lr by factor of 0.1 every 5 epochs
+        # given total epochs is 20
+        if (i < 260): # first 5 epoch
             factor = 1.0
-        elif i < config.steps[1]:
+        elif i < 520:
             factor = 0.1
-        else:
+        elif i < 780:
             factor = 0.01
+        elif i < 1040:
+            factor = 0.001
+        else:
+            factor = 0.001
         return factor
 
     if config.TRAIN_OPTIMIZER.lower() == 'adam':
@@ -387,7 +402,8 @@ def train(model, device, config, epochs=5, batch_size=1, save_cp=True, log_step=
                     scheduler.step()
                     model.zero_grad()
 
-                if global_step % (log_step * config.subdivisions) == 0:
+                # if global_step % (log_step * config.subdivisions) == 0:
+                if global_step % (100) == 0:
                     writer.add_scalar('train/Loss', loss.item(), global_step)
                     writer.add_scalar('train/loss_xy', loss_xy.item(), global_step)
                     writer.add_scalar('train/loss_wh', loss_wh.item(), global_step)
