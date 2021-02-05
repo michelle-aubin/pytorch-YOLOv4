@@ -5,6 +5,9 @@ import math
 from sklearn.cluster import KMeans
 import numpy as np
 
+def MyFn(lst):
+    return lst[0] * lst[1]
+
 data_path = '../BBOX-LABELS/'
 
 with open(data_path+'jsonlabels.txt') as f:
@@ -28,4 +31,5 @@ kmeans = KMeans(n_clusters=9).fit(sample)
 rounded = []
 for x in kmeans.cluster_centers_:
     rounded.append([round(x[0]), round(x[1])])
+rounded = sorted(rounded, key=MyFn)
 print(rounded)
