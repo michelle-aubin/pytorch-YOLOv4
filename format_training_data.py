@@ -34,9 +34,9 @@ split_idx = math.ceil(len(all_data) * 0.2)
 test_data = all_data[0:split_idx]
 train_data = all_data[split_idx:]
 
-# small train and test sets for testing
-# test_data = all_data[0:101]
-# train_data = all_data[101:301]
+# # small train and test sets for testing
+# test_data = all_data[0:41]
+# train_data = all_data[41:241]
 
 with open('train.txt', 'w') as fout:
     for line in train_data:
