@@ -33,10 +33,10 @@ Cfg.saturation = 1.5
 Cfg.exposure = 1.5
 Cfg.hue = .1
 
-Cfg.learning_rate = 0.00261
+Cfg.learning_rate = 0.001
 Cfg.burn_in = 1000
-Cfg.max_batches = 500500
-Cfg.steps = [400000, 450000]
+Cfg.max_batches = 2000
+Cfg.steps = [1600,1800]
 Cfg.policy = Cfg.steps
 Cfg.scales = .1, .1
 
