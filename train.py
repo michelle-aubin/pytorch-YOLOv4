@@ -402,8 +402,7 @@ def train(model, device, config, epochs=5, batch_size=1, save_cp=True, log_step=
                     scheduler.step()
                     model.zero_grad()
 
-                # if global_step % (log_step * config.subdivisions) == 0:
-                if global_step % (100) == 0:
+                if global_step % (log_step * config.subdivisions) == 0:
                     writer.add_scalar('train/Loss', loss.item(), global_step)
                     writer.add_scalar('train/loss_xy', loss_xy.item(), global_step)
                     writer.add_scalar('train/loss_wh', loss_wh.item(), global_step)
