@@ -328,14 +328,29 @@ def train(model, device, config, epochs=5, batch_size=1, save_cp=True, log_step=
 
     # learning rate setup
     def burnin_schedule(i):
-        if i < config.burn_in:
-            factor = pow(i / config.burn_in, 4)
-        elif i < config.steps[0]:
+        # if i < config.burn_in:
+        #     factor = pow(i / config.burn_in, 4)
+        # elif i < config.steps[0]:
+        #     factor = 1.0
+        # elif i < config.steps[1]:
+        #     factor = 0.1
+        # else:
+        #     factor = 0.01
+        # return factor
+        # i increments after every batch is processed (64 images)
+        # so i += ~52 after every epoch of 3727 images
+        # HARDCODED to drop lr by factor of 0.5 every 5 epochs
+        # given total epochs is 20
+        if (i < 260): # first 5 epoch
             factor = 1.0
-        elif i < config.steps[1]:
-            factor = 0.1
+        elif i < 520:
+            factor = 0.5
+        elif i < 780:
+            factor = 0.25
+        elif i < 1040:
+            factor = 0.125
         else:
-            factor = 0.01
+            factor = 0.125
         return factor
 
     if config.TRAIN_OPTIMIZER.lower() == 'adam':
