@@ -15,7 +15,7 @@ for entry in data:
         box = entry['boxes']
         top_left = [box[0], box[1]]
         bottom_right = [box[0]+box[2]-1, box[1]+box[3]-1]
-        strs.append('{x1},{y1},{x2},{y2},0'.format(x1=top_left[0], y1=top_left[1], x2=bottom_right[0], y2=bottom_right[1]))
+        strs.append('{x1},{y1},{x2},{y2},1'.format(x1=top_left[0], y1=top_left[1], x2=bottom_right[0], y2=bottom_right[1]))
         out_str = ' '.join(strs)
         out_str += '\n'
         all_data.append(out_str)
@@ -23,7 +23,7 @@ for entry in data:
         for box in entry['boxes']:
             top_left = [box[0], box[1]]
             bottom_right = [box[0]+box[2]-1, box[1]+box[3]-1]
-            strs.append('{x1},{y1},{x2},{y2},0'.format(x1=top_left[0], y1=top_left[1], x2=bottom_right[0], y2=bottom_right[1]))
+            strs.append('{x1},{y1},{x2},{y2},1'.format(x1=top_left[0], y1=top_left[1], x2=bottom_right[0], y2=bottom_right[1]))
         out_str = ' '.join(strs)
         out_str += '\n'
         all_data.append(out_str)
