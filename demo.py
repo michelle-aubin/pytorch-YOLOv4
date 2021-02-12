@@ -39,7 +39,7 @@ def detect_cv2(cfgfile, weightfile, imgfile):
     elif num_classes == 80:
         namesfile = 'data/coco.names'
     else:
-        namesfile = 'data/x.names'
+        namesfile = 'data/anomaly.names'
     class_names = load_class_names(namesfile)
 
     img = cv2.imread(imgfile)
@@ -48,7 +48,7 @@ def detect_cv2(cfgfile, weightfile, imgfile):
 
     for i in range(2):
         start = time.time()
-        boxes = do_detect(m, sized, 0.4, 0.6, use_cuda)
+        boxes = do_detect(m, sized, 0.3, 0.45, use_cuda)
         finish = time.time()
         if i == 1:
             print('%s: Predicted in %f seconds.' % (imgfile, (finish - start)))

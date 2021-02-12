@@ -3,6 +3,7 @@ from torch import nn
 import torch.nn.functional as F
 from tool.torch_utils import *
 from tool.yolo_layer import YoloLayer
+from tool import darknet2pytorch
 
 
 class Mish(torch.nn.Module):
@@ -471,10 +472,12 @@ if __name__ == "__main__":
         print('Usage: ')
         print('  python models.py num_classes weightfile imgfile namefile')
 
-    model = Yolov4(yolov4conv137weight=None, n_classes=n_classes, inference=True)
+    # model = Yolov4(yolov4conv137weight=None, n_classes=n_classes, inference=True)
 
-    pretrained_dict = torch.load(weightfile, map_location=torch.device('cuda'))
-    model.load_state_dict(pretrained_dict)
+    # pretrained_dict = torch.load(weightfile, map_location=torch.device('cuda'))
+    # model.load_state_dict(pretrained_dict)
+    model = darknet2pytorch.Darknet('yolov4-obj.cfg', inference=True)
+    model.load_state_dict(torch.load(weightfile))
 
     use_cuda = True
     if use_cuda:
@@ -495,7 +498,7 @@ if __name__ == "__main__":
 
     for i in range(2):  # This 'for' loop is for speed check
                         # Because the first iteration is usually longer
-        boxes = do_detect(model, sized, 0.4, 0.6, use_cuda)
+        boxes = do_detect(model, sized, 0.3, 0.45, use_cuda)
 
     if namesfile == None:
         if n_classes == 20:
