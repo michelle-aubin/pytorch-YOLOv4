@@ -5,6 +5,7 @@ from tool.region_loss import RegionLoss
 from tool.yolo_layer import YoloLayer
 from tool.config import *
 from tool.torch_utils import *
+from typing import List, Dict
 
 
 class Mish(torch.nn.Module):
@@ -129,6 +130,7 @@ class Darknet(nn.Module):
         self.inference = inference
         self.training = not self.inference
 
+        self.blocks: List[dict] = []
         self.blocks = parse_cfg(cfgfile)
         self.width = int(self.blocks[0]['width'])
         self.height = int(self.blocks[0]['height'])

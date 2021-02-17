@@ -1,6 +1,8 @@
 import torch.nn as nn
 import torch.nn.functional as F
 from tool.torch_utils import *
+import torch
+from typing import List, Tuple
 
 def yolo_forward(output, conf_thresh, num_classes, anchors, num_anchors, scale_x_y, only_objectness=1,
                               validation=False):
@@ -145,8 +147,8 @@ def yolo_forward(output, conf_thresh, num_classes, anchors, num_anchors, scale_x
     return  boxes, confs
 
 
-def yolo_forward_dynamic(output, conf_thresh, num_classes, anchors, num_anchors, scale_x_y, only_objectness=1,
-                              validation=False):
+def yolo_forward_dynamic(output, conf_thresh: float, num_classes: int, anchors: List[float], num_anchors: int, scale_x_y: float, only_objectness: int=1,
+                              validation: bool=False):
     # Output would be invalid if it does not satisfy this assert
     # assert (output.size(1) == (5 + num_classes) * num_anchors)
 
@@ -199,21 +201,25 @@ def yolo_forward_dynamic(output, conf_thresh, num_classes, anchors, num_anchors,
     cls_confs = torch.sigmoid(cls_confs)
 
     # Prepare C-x, C-y, P-w, P-h (None of them are torch related)
-    grid_x = np.expand_dims(np.expand_dims(np.expand_dims(np.linspace(0, output.size(3) - 1, output.size(3)), axis=0).repeat(output.size(2), 0), axis=0), axis=0)
-    grid_y = np.expand_dims(np.expand_dims(np.expand_dims(np.linspace(0, output.size(2) - 1, output.size(2)), axis=1).repeat(output.size(3), 1), axis=0), axis=0)
+    # grid_x = np.expand_dims(np.expand_dims(np.expand_dims(np.linspace(0, output.size(3) - 1, output.size(3)), axis=0).repeat(output.size(2), 0), axis=0), axis=0)
+    # grid_y = np.expand_dims(np.expand_dims(np.expand_dims(np.linspace(0, output.size(2) - 1, output.size(2)), axis=1).repeat(output.size(3), 1), axis=0), axis=0)
     # grid_x = torch.linspace(0, W - 1, W).reshape(1, 1, 1, W).repeat(1, 1, H, 1)
     # grid_y = torch.linspace(0, H - 1, H).reshape(1, 1, H, 1).repeat(1, 1, 1, W)
+    grid_x = torch.linspace(0, output.size(3) - 1, output.size(3)).reshape(1, 1, 1, output.size(3)).repeat(1, 1, output.size(2), 1)
+    grid_y = torch.linspace(0, output.size(2) - 1, output.size(2)).reshape(1, 1, output.size(2), 1).repeat(1, 1, 1, output.size(3))
 
-    anchor_w = []
-    anchor_h = []
+    # anchor_w = []
+    # anchor_h = []
+    anchor_w: List[float] = []
+    anchor_h: List[float] = []
     for i in range(num_anchors):
         anchor_w.append(anchors[i * 2])
         anchor_h.append(anchors[i * 2 + 1])
 
-    device = None
+    device = output.device
     cuda_check = output.is_cuda
     if cuda_check:
-        device = output.get_device()
+        device = output.device
 
     bx_list = []
     by_list = []
@@ -224,9 +230,9 @@ def yolo_forward_dynamic(output, conf_thresh, num_classes, anchors, num_anchors,
     for i in range(num_anchors):
         ii = i * 2
         # Shape: [batch, 1, H, W]
-        bx = bxy[:, ii : ii + 1] + torch.tensor(grid_x, device=device, dtype=torch.float32) # grid_x.to(device=device, dtype=torch.float32)
+        bx = bxy[:, ii : ii + 1] + grid_x.to(device=device, dtype=torch.float32) # torch.tensor(grid_x, device=device, dtype=torch.float32) # grid_x.to(device=device, dtype=torch.float32)
         # Shape: [batch, 1, H, W]
-        by = bxy[:, ii + 1 : ii + 2] + torch.tensor(grid_y, device=device, dtype=torch.float32) # grid_y.to(device=device, dtype=torch.float32)
+        by = bxy[:, ii + 1 : ii + 2] + grid_y.to(device=device, dtype=torch.float32) # torch.tensor(grid_y, device=device, dtype=torch.float32) # grid_y.to(device=device, dtype=torch.float32)
         # Shape: [batch, 1, H, W]
         bw = bwh[:, ii : ii + 1] * anchor_w[i]
         # Shape: [batch, 1, H, W]
@@ -310,10 +316,12 @@ class YoloLayer(nn.Module):
 
         self.model_out = model_out
 
-    def forward(self, output, target=None):
+    def forward(self, output, target: torch.Tensor=torch.zeros(1)) -> Tuple[torch.Tensor, torch.Tensor]:
         if self.training:
-            return output
-        masked_anchors = []
+            # dummy value for 2nd item in tuple
+            return (output, torch.zeros(1))
+        # "For empty container types, annotate their types using PEP 526-style class annotations." https://pytorch.org/docs/stable/jit.html
+        masked_anchors: List[float] = [] # masked_anchors = [] 
         for m in self.anchor_mask:
             masked_anchors += self.anchors[m * self.anchor_step:(m + 1) * self.anchor_step]
         masked_anchors = [anchor / self.stride for anchor in masked_anchors]
